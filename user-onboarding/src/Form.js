@@ -6,6 +6,18 @@ import axios from "axios";
 
 
  function FormFunction({ values, errors, touched, status }) {
+
+    const [users, setUsers] = useState([]);
+
+    useEffect(() => {
+        console.log("status has changed!", status);
+        // if status has content (an obj from API response) then render function setAnimals
+        // use a spread to create a new array with all of animals' previous values + the new obj from the API stored in status
+        // could be setAnimals([...animals, status]) but that fires a warning that we should watch animals. We don't need to watch for animals changes (this is the only place it could change)
+        // change to animals => [...animals, status] to read in the current value of animals, and then use it to create a new array
+        status && setUsers(users => [...users, status]);
+      }, [status]);
+
     return (
         <div>
             <Form>
@@ -15,7 +27,10 @@ import axios from "axios";
                  type="text"
                  name="name"
                  placeholder="name"
-                />
+                /> {touched.name && errors.name && (
+                    <p className="errors">{errors.name}</p>
+                  )}
+
                </label>
                 <label htmlFor="name">Email
                 <Field 
@@ -24,6 +39,9 @@ import axios from "axios";
                  name="email"
                  placeholder="email"
                 />
+                 {touched.email && errors.email && (
+            <p className="errors">{errors.email}</p>
+          )}
                 </label>
                 <label htmlFor="password">Password
                 <Field 
@@ -32,6 +50,8 @@ import axios from "axios";
                  name="password"
                  placeholder="password"
                 />
+                    {touched.password && errors.password && (
+            <p className="errors">{errors.password}</p>)}
                 </label>
                 <label htmlFor="name">Terms of Service
                 <Field 
@@ -39,9 +59,24 @@ import axios from "axios";
                  type="checkbox"
                  name="termsOfService"
                 />
+                    {touched.termsOfService && errors.termsOfService && (
+            <p className="errors">{errors.termsOfService}</p>)}
+
+                
                 </label>
                 <button type="submit">Submit</button>
             </Form>
+            {/* <pre>{JSON.stringify(values, null, 2)}</pre>
+      <pre>{JSON.stringify(errors, null, 2)}</pre> */}
+      {users.map(user => {
+        return (
+          <ul key={user.id}>
+            <li>Name: {user.name}</li>
+            <li>Email: {user.email}</li>
+            <li>Password: {user.password}</li>
+          </ul>
+        );
+      })}
             
         </div>
     )
@@ -56,7 +91,32 @@ const FormikFormFunction = withFormik({
             termsOfService: props.termsOfService || false
             
           };
-    }
+    },
+
+    validationSchema: Yup.object().shape({
+        name: Yup.string().required("NAME IS REQUIRED"),
+        
+        email: Yup.string().required("EMAIL IS MANDATORY"),
+
+        password: Yup.string().required("PASSWORD IS REQUIRED"),
+
+        termsOfService: Yup.string().required("")
+      }),
+
+      handleSubmit(values, { setStatus, resetForm }) {
+        console.log("submitting", values);
+        axios
+          .post("https://reqres.in/api/users", values)
+          .then(res => {
+            console.log("success", res);
+            // sends a status update through props in AnimalForm with value as res.data content
+            setStatus(res.data);
+    
+            //clears form inputs, from FormikBag
+            resetForm();
+          })
+          .catch(err => console.log(err.response));
+      }
 })(FormFunction)
 
 
