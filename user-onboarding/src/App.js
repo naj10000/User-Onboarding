@@ -1,15 +1,15 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import FormPage from './Form.js';
+import FormFunction from './Form.js';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
+      
         <img src={logo} className="App-logo" alt="logo" />
        
-       <FormPage />
+      
         <a
           className="App-link"
           href="https://reactjs.org"
@@ -18,7 +18,8 @@ function App() {
         >
           
         </a>
-      </header>
+      
+      <FormFunction />
     </div>
   );
 }
