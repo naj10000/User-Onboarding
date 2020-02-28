@@ -11,10 +11,7 @@ import axios from "axios";
 
     useEffect(() => {
         console.log("status has changed!", status);
-        // if status has content (an obj from API response) then render function setAnimals
-        // use a spread to create a new array with all of animals' previous values + the new obj from the API stored in status
-        // could be setAnimals([...animals, status]) but that fires a warning that we should watch animals. We don't need to watch for animals changes (this is the only place it could change)
-        // change to animals => [...animals, status] to read in the current value of animals, and then use it to create a new array
+       
         status && setUsers(users => [...users, status]);
       }, [status]);
 
